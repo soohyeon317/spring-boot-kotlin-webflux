@@ -1,0 +1,76 @@
+package com.example.springbootkotlinwebflux.configuration.authentication
+
+import com.example.springbootkotlinwebflux.domain.authtoken.AuthTokenRepository
+import com.example.springbootkotlinwebflux.exception.ErrorCode
+import com.example.springbootkotlinwebflux.exception.UnAuthorizedException
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.UnsupportedJwtException
+import io.jsonwebtoken.security.SignatureException
+import kotlinx.coroutines.reactor.awaitSingle
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.stereotype.Component
+
+@Component
+class AuthenticationTokenManagerImpl(
+    private val jwtUtil: JWTUtil,
+    private val authTokenRepository: AuthTokenRepository
+) : AuthenticationTokenManager {
+
+    override fun validateToken(token: String, tokenType: AuthenticationTokenType): Boolean {
+        return try {
+            jwtUtil.parseJWTClaims(token)
+            true
+        } catch (e: Throwable) {
+            when (e) {
+                is ExpiredJwtException -> {
+                    val errorCode = if (tokenType == AuthenticationTokenType.REFRESH) {
+                        ErrorCode.REFRESH_TOKEN_EXPIRED
+                    } else {
+                        ErrorCode.ACCESS_TOKEN_EXPIRED
+                    }
+                    throw UnAuthorizedException(errorCode)
+                }
+                is MalformedJwtException,
+                is SignatureException,
+                is UnsupportedJwtException,
+                is IllegalArgumentException -> {
+                    val errorCode = if (tokenType == AuthenticationTokenType.REFRESH) {
+                        ErrorCode.REFRESH_TOKEN_INVALID
+                    } else {
+                        ErrorCode.ACCESS_TOKEN_INVALID
+                    }
+                    throw UnAuthorizedException(errorCode)
+                }
+                else -> throw e
+            }
+        }
+    }
+
+    override fun toAuthenticationToken(accessToken: String): AuthenticationToken =
+        if (validateToken(accessToken, AuthenticationTokenType.ACCESS)) {
+            AuthenticationToken(jwtUtil.parseJWTClaims(accessToken))
+        } else {
+            throw UnAuthorizedException(ErrorCode.ACCESS_TOKEN_INVALID)
+        }
+
+    override suspend fun isSaved(accessToken: String): Boolean = authTokenRepository.findTopByAccessTokenAndDeletedAtIsNullOrderByIdDesc(accessToken) != null
+
+    override fun createToken(accountId: Long, tokenType: AuthenticationTokenType): String =
+        jwtUtil.generate(accountId, tokenType)
+
+    override suspend fun getAccountId(): Long = ReactiveSecurityContextHolder
+        .getContext()
+        .map { security: SecurityContext -> security.authentication!!.principal.toString().toLong() }
+        .doOnError {
+            throw UnAuthorizedException(ErrorCode.UNAUTHORIZED, it.message)
+        }.awaitSingle()
+
+    override suspend fun getDetails(): AuthenticationTokenDetails = ReactiveSecurityContextHolder
+        .getContext()
+        .map { security: SecurityContext -> security.authentication!!.details as AuthenticationTokenDetails }
+        .doOnError {
+            throw UnAuthorizedException(ErrorCode.UNAUTHORIZED, it.message)
+        }.awaitSingle()
+}

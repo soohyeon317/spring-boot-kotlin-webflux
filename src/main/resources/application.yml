@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: spring-boot-kotlin-webflux
+  main:
+    allow-bean-definition-overriding: true

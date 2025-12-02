@@ -1,0 +1,49 @@
+server:
+  port: 5000
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/~~~~~
+    username: ~~~~~
+    password: ~~~~~
+    connect-timeout: 3s
+    pool:
+      validation-query: SELECT 1
+      initial-size: 10
+      max-size: 50
+      max-acquire-time: 30s
+      max-idle-time: 25m
+      max-life-time: 30m
+  redis:
+    redisson:
+      config:
+        singleServerConfig:
+          address: redis://localhost:6379
+          password: ~~~~~
+          database: 0
+          idleConnectionTimeout: 10000
+          connectTimeout: 10000
+          timeout: 3000
+          retryAttempts: 3
+          retryInterval: 1500
+          subscriptionsPerConnection: 5
+          subscriptionConnectionMinimumIdleSize: 1
+          subscriptionConnectionPoolSize: 50
+          connectionMinimumIdleSize: 24
+          connectionPoolSize: 64
+          dnsMonitoringInterval: 5000
+        threads: 0
+        nettyThreads: 0
+        transportMode: "NIO"
+
+jwt:
+  secret-key: "~~~~~"
+  access-token-validity-in-seconds: 36000 # 10시간
+  refresh-token-validity-in-seconds: 5184000 # 60일
+
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG
