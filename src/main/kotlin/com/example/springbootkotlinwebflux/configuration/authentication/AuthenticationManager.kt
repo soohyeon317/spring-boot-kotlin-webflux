@@ -24,7 +24,7 @@ class AuthenticationManager(
             }
             authenticationToken
         }.flatMap {
-            val auth = UsernamePasswordAuthenticationToken(it.accountId, null)
+            val auth = UsernamePasswordAuthenticationToken(it.accountId, null, emptyList())
             auth.details = AuthenticationTokenDetails(
                 accountId = it.accountId
             )

@@ -2,6 +2,7 @@ package com.example.springbootkotlinwebflux.endpoint.restapi.v1.account
 
 import com.example.springbootkotlinvirtualthread.configuration.annotation.FunctionExecutionBeforeLog
 import com.example.springbootkotlinwebflux.application.account.*
+import com.example.springbootkotlinwebflux.configuration.authentication.AuthenticationToken
 import com.example.springbootkotlinwebflux.configuration.authentication.AuthenticationTokenManager
 import com.example.springbootkotlinwebflux.domain.account.AccountForResponse
 import com.example.springbootkotlinwebflux.domain.account.LocaleInfoDefault
@@ -17,6 +18,8 @@ class AccountController(
     private val accountSignUpSignInUseCase: AccountSignUpSignInUseCase,
     private val accountSignInRefreshUseCase: AccountSignInRefreshUseCase,
     private val accountDetailGetUseCase: AccountDetailGetUseCase,
+    private val accountSignOutUseCase: AccountSignOutUseCase,
+    private val accountWithdrawUseCase: AccountWithdrawUseCase,
     private val authenticationTokenManager: AuthenticationTokenManager,
 ) {
 
@@ -44,6 +47,7 @@ class AccountController(
         )
     }
 
+    @FunctionExecutionBeforeLog
     @PostMapping("/sign-in/refresh")
     @ResponseStatus(HttpStatus.OK)
     suspend fun refreshSignIn(
@@ -57,6 +61,7 @@ class AccountController(
                 )))
     }
 
+    @FunctionExecutionBeforeLog
     @GetMapping("/detail")
     @ResponseStatus(HttpStatus.OK)
     suspend fun getAccountDetail(
@@ -73,6 +78,28 @@ class AccountController(
                 timeZoneCode = timeZoneCode,
             )
         )
+    }
 
+    @FunctionExecutionBeforeLog
+    @PostMapping("/sign-out")
+    @ResponseStatus(HttpStatus.OK)
+    suspend fun signOut(
+        exchange: ServerWebExchange
+    ) {
+        val accessToken = AuthenticationToken.getJwtFromExchange(exchange = exchange)!!
+        val accountId = authenticationTokenManager.getAccountIdFromToken(token = accessToken)
+        accountSignOutUseCase.signOut(
+            command = AccountSignOutCommand.SignOut(accountId = accountId, accessToken = accessToken)
+        )
+    }
+
+    @FunctionExecutionBeforeLog
+    @PostMapping("/withdraw")
+    @ResponseStatus(HttpStatus.OK)
+    suspend fun withdraw() {
+        val accountId = authenticationTokenManager.getAccountId()
+        accountWithdrawUseCase.withdraw(
+            command = AccountWithdrawCommand.Withdraw(accountId = accountId)
+        )
     }
 }

@@ -17,10 +17,6 @@ class SecurityContextRepository(
     val authenticationManager: AuthenticationManager,
 ) : ServerSecurityContextRepository {
 
-    private val basicTokenAuthType = "basic"
-    private val authDelimiter = " "
-    private val urlDelimiter = "/"
-
     override fun save(
         exchange: ServerWebExchange,
         context: SecurityContext?,
@@ -30,19 +26,16 @@ class SecurityContextRepository(
 
     override fun load(exchange: ServerWebExchange): Mono<SecurityContext> {
         val authorization = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION)
-        val bearerTokenPrefix = AuthenticationToken.BEARER_TOKEN_AUTH_TYPE.plus(authDelimiter)
-        val basicTokenPrefix = basicTokenAuthType.plus(authDelimiter)
         return Mono.justOrEmpty(authorization)
             .filter { auth ->
-                auth.startsWith(bearerTokenPrefix, true)
-                    .or(auth.startsWith(basicTokenPrefix, true))
+                auth.startsWith(AuthenticationToken.BEARER_TOKEN_PREFIX, true)
             }
             .flatMap { auth ->
-                val isBearerToken = auth.startsWith(bearerTokenPrefix, true)
+                val isBearerToken = auth.startsWith(AuthenticationToken.BEARER_TOKEN_PREFIX, true)
                 val accessToken: String
                 val authentication: Authentication
                 if (isBearerToken) {
-                    accessToken = auth.replace(bearerTokenPrefix, "", true).trim()
+                    accessToken = auth.substring(AuthenticationToken.BEARER_TOKEN_PREFIX.length)
                     authentication = UsernamePasswordAuthenticationToken(accessToken, accessToken, emptyList())
                     authenticationManager.authenticate(authentication).map { s -> SecurityContextImpl(s) }
                 } else {

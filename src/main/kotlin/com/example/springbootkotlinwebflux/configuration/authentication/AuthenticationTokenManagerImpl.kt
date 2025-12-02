@@ -55,10 +55,19 @@ class AuthenticationTokenManagerImpl(
             throw UnAuthorizedException(ErrorCode.ACCESS_TOKEN_INVALID)
         }
 
-    override suspend fun isSaved(accessToken: String): Boolean = authTokenRepository.findTopByAccessTokenAndDeletedAtIsNullOrderByIdDesc(accessToken) != null
-
     override fun createToken(accountId: Long, tokenType: AuthenticationTokenType): String =
         jwtUtil.generate(accountId, tokenType)
+
+    override fun getAccountIdFromToken(token: String): Long {
+        val claims = jwtUtil.parseJWTClaims(token)
+        return when (val accountId = claims[AuthenticationToken.ACCOUNT_ID_CLAIM_KEY]) {
+            is Number -> accountId.toLong()
+            is String -> accountId.toLong()
+            else -> throw IllegalArgumentException("Invalid account ID in token")
+        }
+    }
+
+    override suspend fun isSaved(accessToken: String): Boolean = authTokenRepository.findTopByAccessTokenAndDeletedAtIsNullOrderByIdDesc(accessToken) != null
 
     override suspend fun getAccountId(): Long = ReactiveSecurityContextHolder
         .getContext()
