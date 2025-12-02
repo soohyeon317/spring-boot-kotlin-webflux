@@ -43,7 +43,7 @@ class SecurityContextRepository(
                 val authentication: Authentication
                 if (isBearerToken) {
                     accessToken = auth.replace(bearerTokenPrefix, "", true).trim()
-                    authentication = UsernamePasswordAuthenticationToken(accessToken, accessToken)
+                    authentication = UsernamePasswordAuthenticationToken(accessToken, accessToken, emptyList())
                     authenticationManager.authenticate(authentication).map { s -> SecurityContextImpl(s) }
                 } else {
                     return@flatMap Mono.error(UnAuthorizedException(ErrorCode.UNAUTHORIZED))
