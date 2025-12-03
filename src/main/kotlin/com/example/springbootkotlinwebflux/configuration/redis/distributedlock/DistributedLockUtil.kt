@@ -3,7 +3,7 @@ package com.example.springbootkotlinwebflux.configuration.redis.distributedlock
 import com.example.springbootkotlinwebflux.configuration.logger.logger
 import com.example.springbootkotlinwebflux.exception.DistributedLockAcquisitionFailureException
 import com.example.springbootkotlinwebflux.exception.ErrorCode
-import com.example.springbootkotlinwebflux.exception.MethodRuntimeTimeoutException
+import com.example.springbootkotlinwebflux.exception.MethodRunTimeoutException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.TimeoutCancellationException
@@ -29,7 +29,7 @@ class DistributedLockUtil(
         val lockName = "$targetName:$id"
         val lock = redissonReactiveClient.getLock(lockName)
 
-        val available = lock.tryLock(TRY_LOCK_TIMEOUT, LEASE_TIMEOUT, TimeUnit.SECONDS, uniqueId).awaitSingle()
+        val available = lock.tryLock(LOCK_TRY_TIMEOUT, LOCK_LEASE_TIMEOUT, TimeUnit.SECONDS, uniqueId).awaitSingle()
 
         if (!available) {
             throw DistributedLockAcquisitionFailureException(
@@ -39,15 +39,15 @@ class DistributedLockUtil(
         }
 
         try {
-            logger().info("Distributed Lock acquired. (LockName=$lockName, UniqueId=$uniqueId, TryLockTimeout=$TRY_LOCK_TIMEOUT, LeaseTimeout=$LEASE_TIMEOUT, TargetMethodTimeout=$TARGET_METHOD_TIMEOUT)")
+            logger().info("Distributed Lock acquired. (LockName=$lockName, UniqueId=$uniqueId, LockTryTimeout=$LOCK_TRY_TIMEOUT, LockLeaseTimeout=$LOCK_LEASE_TIMEOUT, MethodRunTimeout=$METHOD_RUN_TIMEOUT)")
             return transactionUtil.executeInNewTransaction(
-                timeoutSecond = TARGET_METHOD_TIMEOUT,
+                timeoutSecond = METHOD_RUN_TIMEOUT,
                 operation = { block.invoke() }
             )
         } catch (ex: Exception) {
             when (ex) {
                 is TimeoutCancellationException -> {
-                    throw MethodRuntimeTimeoutException(code = ErrorCode.METHOD_RUNTIME_TIMEOUT)
+                    throw MethodRunTimeoutException(code = ErrorCode.METHOD_RUN_TIMEOUT)
                 }
 
                 else -> throw ex
@@ -55,18 +55,18 @@ class DistributedLockUtil(
         } finally {
             withContext(NonCancellable) {
                 lock.unlock(uniqueId).awaitSingleOrNull()
-                logger().info("Distributed Lock released. (LockName=$lockName, UniqueId=$uniqueId, TryLockTimeout=$TRY_LOCK_TIMEOUT, LeaseTimeout=$LEASE_TIMEOUT, TargetMethodTimeout=$TARGET_METHOD_TIMEOUT)")
+                logger().info("Distributed Lock released. (LockName=$lockName, UniqueId=$uniqueId, LockTryTimeout=$LOCK_TRY_TIMEOUT, LockLeaseTimeout=$LOCK_LEASE_TIMEOUT, MethodRunTimeout=$METHOD_RUN_TIMEOUT)")
             }
         }
     }
 
     companion object {
         // 획득까지 대기 시간
-        private const val TRY_LOCK_TIMEOUT = 0L
+        private const val LOCK_TRY_TIMEOUT = 0L
 
         // 획득 이후 잡고 있을 시간, 이 시간이 지나도 unlock되지 않으면 자동으로 unlock
-        private const val LEASE_TIMEOUT = 6L
+        private const val LOCK_LEASE_TIMEOUT = 6L
 
-        private const val TARGET_METHOD_TIMEOUT = 5L
+        private const val METHOD_RUN_TIMEOUT = 5L
     }
 }
