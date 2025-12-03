@@ -29,6 +29,10 @@ fun main(args: Array<String>) {
                 "org.springframework.aop.framework.CglibAopProxy\$DynamicAdvisedInterceptor",
                 "intercept"
             )
+            it.allowBlockingCallsInside( // for springdoc-openapi
+                "java.util.zip.InflaterInputStream",
+                "read"
+            )
         })
     }
 
