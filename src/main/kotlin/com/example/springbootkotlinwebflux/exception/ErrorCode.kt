@@ -4,6 +4,7 @@ enum class ErrorCode(val message: String) {
 
     // INPUT
     INPUT_INVALID("Input is invalid."),
+    DATE_FORMAT_INVALID("Date format is invalid."),
 
     // AUTHENTICATION
     UNAUTHORIZED("Account is unauthorized."),
