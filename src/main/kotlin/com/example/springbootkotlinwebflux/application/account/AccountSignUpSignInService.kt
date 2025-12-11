@@ -6,6 +6,7 @@ import com.example.springbootkotlinwebflux.configuration.logger.logger
 import com.example.springbootkotlinwebflux.domain.account.Account
 import com.example.springbootkotlinwebflux.domain.account.AccountRepository
 import com.example.springbootkotlinwebflux.domain.account.ThirdPartyAuthType
+import com.example.springbootkotlinwebflux.domain.appuseenvironment.AppUseEnvironmentManager
 import com.example.springbootkotlinwebflux.domain.authtoken.AuthToken
 import com.example.springbootkotlinwebflux.domain.authtoken.AuthTokenRepository
 import org.springframework.stereotype.Service
@@ -16,13 +17,13 @@ class AccountSignUpSignInService(
     private val accountRepository: AccountRepository,
     private val authTokenRepository: AuthTokenRepository,
     private val authenticationTokenManager: AuthenticationTokenManager,
+    private val appUseEnvironmentManager: AppUseEnvironmentManager,
 ) : AccountSignUpSignInUseCase {
 
     // 회원가입 및 로그인 통합 처리
     @Transactional(rollbackFor = [Throwable::class])
     override suspend fun signUpSignIn(command: AccountSignUpSignInCommand.SignUpSignIn): Pair<AuthToken, Boolean> {
         try {
-
             var isNewAccount = false
             var myAccount: Account = accountRepository.findTopByThirdPartyAuthTypeAndThirdPartyAuthUidAndDeletedAtIsNullOrderByIdDesc(
                 thirdPartyAuthType = command.thirdPartyAuthType,
@@ -69,6 +70,17 @@ class AccountSignUpSignInService(
             val refreshToken = authenticationTokenManager.createToken(accountId = myAccountId, tokenType = AuthenticationTokenType.REFRESH)
             val newAuthToken = authTokenRepository.save(
                 AuthToken(accountId = myAccountId, accessToken =  accessToken, refreshToken = refreshToken)
+            )
+
+            /*
+            앱 사용 환경 정보 저장
+             */
+            appUseEnvironmentManager.create(
+                accountId = myAccountId,
+                deviceModelName = command.deviceModelName,
+                appOs = command.appOs,
+                appVersion = command.appVersion,
+                appPushToken = command.appPushToken,
             )
 
             return Pair(newAuthToken, isNewAccount)

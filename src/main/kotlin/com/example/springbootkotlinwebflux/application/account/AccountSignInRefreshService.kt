@@ -4,6 +4,7 @@ import com.example.springbootkotlinwebflux.configuration.authentication.Authenti
 import com.example.springbootkotlinwebflux.configuration.authentication.AuthenticationTokenType
 import com.example.springbootkotlinwebflux.configuration.logger.logger
 import com.example.springbootkotlinwebflux.domain.account.AccountRepository
+import com.example.springbootkotlinwebflux.domain.appuseenvironment.AppUseEnvironmentManager
 import com.example.springbootkotlinwebflux.domain.authtoken.AuthToken
 import com.example.springbootkotlinwebflux.domain.authtoken.AuthTokenRepository
 import com.example.springbootkotlinwebflux.exception.*
@@ -14,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional
 class AccountSignInRefreshService(
     private val accountRepository: AccountRepository,
     private val authTokenRepository: AuthTokenRepository,
-    private val authenticationTokenManager: AuthenticationTokenManager
+    private val authenticationTokenManager: AuthenticationTokenManager,
+    private val appUseEnvironmentManager: AppUseEnvironmentManager,
 ): AccountSignInRefreshUseCase {
 
     @Transactional(rollbackFor = [Throwable::class])
@@ -25,6 +27,8 @@ class AccountSignInRefreshService(
                 ?: throw AuthTokenNotFoundException(ErrorCode.ACCESS_TOKEN_NOT_FOUND)
             accountRepository.findTopByIdAndDeletedAtIsNull(authToken.accountId)
                 ?: throw AccountNotFoundException(ErrorCode.MY_ACCOUNT_NOT_FOUND)
+            val myAccountId = authToken.accountId
+
             // RefreshToken 유효성 검증
             authenticationTokenManager.validateToken(command.refreshToken, AuthenticationTokenType.REFRESH)
             // RefreshToken 일치 여부 검사
@@ -37,6 +41,18 @@ class AccountSignInRefreshService(
                 authenticationTokenManager.createToken(authToken.accountId, AuthenticationTokenType.ACCESS)
             val newRefreshToken =
                 authenticationTokenManager.createToken(authToken.accountId, AuthenticationTokenType.REFRESH)
+
+            /*
+            앱 사용 환경 정보 저장
+             */
+            appUseEnvironmentManager.create(
+                accountId = myAccountId,
+                deviceModelName = command.deviceModelName,
+                appOs = command.appOs,
+                appVersion = command.appVersion,
+                appPushToken = command.appPushToken,
+            )
+
             return authTokenRepository.save(
                 authToken.update(newAccessToken, newRefreshToken)
             )

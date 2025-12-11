@@ -6,6 +6,12 @@ enum class ErrorCode(val message: String) {
     INPUT_INVALID("Input is invalid."),
     DATE_FORMAT_INVALID("Date format is invalid."),
 
+    // HEADER
+    DEVICE_MODEL_NAME_HEADER_REQUIRED("Device model name header is required."),
+    APP_OS_HEADER_REQUIRED("App OS header is required."),
+    APP_VERSION_HEADER_REQUIRED("App version header is required."),
+    APP_OS_HEADER_INVALID("App OS header is invalid."),
+
     // AUTHENTICATION
     UNAUTHORIZED("Account is unauthorized."),
     ACCESS_FORBIDDEN("Access is forbidden."),
@@ -20,6 +26,9 @@ enum class ErrorCode(val message: String) {
     // AUTH_TOKEN
     ACCESS_TOKEN_NOT_FOUND("AccessToken is not found."),
     REFRESH_TOKEN_NOT_MATCHED("RefreshToken is not matched."),
+
+    // APP_USE_ENVIRONMENT
+    APP_USE_ENVIRONMENT_NOT_FOUND("App use environment is not found."),
 
     // INTERNAL SERVER ERROR
     DISTRIBUTED_LOCK_ACQUISITION_FAILURE("Fail to acquire the lock."),
