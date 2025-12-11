@@ -21,11 +21,6 @@ class AuthTokenRepositoryImpl(
         ).awaitSingle().toAuthToken()
     }
 
-    override suspend fun findTopByAccountIdAndDeletedAtIsNullOrderByIdDesc(accountId: Long): AuthToken? = withContext(ioDispatcher) {
-        springDataAuthTokenRepository.findTopByAccountIdAndDeletedAtIsNullOrderByIdDesc(accountId)
-            .awaitSingleOrNull()?.toAuthToken()
-    }
-
     override suspend fun findTopByAccessTokenAndDeletedAtIsNullOrderByIdDesc(accessToken: String): AuthToken? = withContext(ioDispatcher) {
         springDataAuthTokenRepository.findTopByAccessTokenAndDeletedAtIsNullOrderByIdDesc(accessToken)
             .awaitSingleOrNull()?.toAuthToken()
@@ -36,11 +31,6 @@ class AuthTokenRepositoryImpl(
             accountId,
             accessToken
         ).awaitSingleOrNull()?.toAuthToken()
-    }
-
-    override suspend fun findTopByAccountIdOrderByIdDesc(accountId: Long): AuthToken? = withContext(ioDispatcher) {
-        springDataAuthTokenRepository.findTopByAccountIdOrderByIdDesc(accountId)
-            .awaitSingleOrNull()?.toAuthToken()
     }
 
     override suspend fun deleteAllByAccountIdAndDeletedAtIsNull(

@@ -7,10 +7,8 @@ import java.time.LocalDateTime
 
 interface SpringDataAuthTokenRepository : R2dbcRepository<AuthTokenEntity, Long> {
 
-    fun findTopByAccountIdAndDeletedAtIsNullOrderByIdDesc(accountId: Long): Mono<AuthTokenEntity>
     fun findTopByAccessTokenAndDeletedAtIsNullOrderByIdDesc(accessToken: String): Mono<AuthTokenEntity>
     fun findTopByAccountIdAndAccessTokenAndDeletedAtIsNullOrderByIdDesc(accountId: Long, accessToken: String): Mono<AuthTokenEntity>
-    fun findTopByAccountIdOrderByIdDesc(accountId: Long): Mono<AuthTokenEntity>
 
     @Query("""
         UPDATE auth_token
