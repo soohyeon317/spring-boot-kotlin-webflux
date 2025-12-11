@@ -7,6 +7,7 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 class AuthTokenRepositoryImpl(
@@ -37,16 +38,18 @@ class AuthTokenRepositoryImpl(
         ).awaitSingleOrNull()?.toAuthToken()
     }
 
-    override suspend fun findAllByAccountIdAndDeletedAtIsNull(accountId: Long): List<AuthToken> = withContext(ioDispatcher) {
-        springDataAuthTokenRepository.findAllByAccountIdAndDeletedAtIsNull(accountId)
-            .collectList().awaitSingle()
-            .flatMap {
-                listOf(it.toAuthToken())
-            }
-    }
-
     override suspend fun findTopByAccountIdOrderByIdDesc(accountId: Long): AuthToken? = withContext(ioDispatcher) {
         springDataAuthTokenRepository.findTopByAccountIdOrderByIdDesc(accountId)
             .awaitSingleOrNull()?.toAuthToken()
+    }
+
+    override suspend fun deleteAllByAccountIdAndDeletedAtIsNull(
+        accountId: Long,
+        deletedAt: LocalDateTime,
+    ): Unit = withContext(ioDispatcher) {
+        springDataAuthTokenRepository.deleteAllByAccountIdAndDeletedAtIsNull(
+            accountId = accountId,
+            deletedAt = deletedAt
+        ).awaitSingleOrNull()
     }
 }
