@@ -17,7 +17,7 @@ class AppUseEnvironmentRepositoryImpl(
 
     override suspend fun save(
         appUseEnvironment: AppUseEnvironment,
-        willDelete: Boolean?,
+        willDelete: Boolean,
     ): AppUseEnvironment = withContext(ioDispatcher) {
         springDataAppUseEnvironmentRepository.save(
             AppUseEnvironmentEntity(

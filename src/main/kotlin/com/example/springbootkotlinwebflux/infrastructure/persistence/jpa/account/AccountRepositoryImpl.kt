@@ -16,7 +16,7 @@ class AccountRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher
 ) : AccountRepository {
 
-    override suspend fun save(account: Account, willDelete: Boolean?): Account = withContext(ioDispatcher) {
+    override suspend fun save(account: Account, willDelete: Boolean): Account = withContext(ioDispatcher) {
         springDataAccountRepository.save(
             AccountEntity(account, willDelete)
         ).awaitSingle().toAccount()

@@ -23,7 +23,7 @@ data class AppUseEnvironmentEntity(
     val deletedAt: LocalDateTime?
 ) {
 
-    constructor(appUseEnvironment: AppUseEnvironment, willDelete: Boolean? = null) :
+    constructor(appUseEnvironment: AppUseEnvironment, willDelete: Boolean = false) :
             this(
                 id = appUseEnvironment.id,
                 accountId = appUseEnvironment.accountId,
@@ -37,7 +37,7 @@ data class AppUseEnvironmentEntity(
                     appUseEnvironment.createdAt ?: LocalDateTime.now()
                 },
                 updatedAt = if (appUseEnvironment.id != null) {
-                    if (willDelete == true) {
+                    if (willDelete) {
                         appUseEnvironment.updatedAt
                     } else {
                         LocalDateTime.now()
@@ -45,7 +45,7 @@ data class AppUseEnvironmentEntity(
                 } else {
                     null
                 },
-                deletedAt = if (willDelete != null && willDelete == true) {
+                deletedAt = if (willDelete) {
                     LocalDateTime.now()
                 } else {
                     null

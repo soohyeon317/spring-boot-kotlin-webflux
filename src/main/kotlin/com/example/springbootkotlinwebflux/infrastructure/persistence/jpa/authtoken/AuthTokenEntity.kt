@@ -18,7 +18,7 @@ data class AuthTokenEntity(
     val deletedAt: LocalDateTime?
 ) {
 
-    constructor(authToken: AuthToken, willDelete: Boolean? = null) :
+    constructor(authToken: AuthToken, willDelete: Boolean = false) :
             this(
                 id = authToken.id,
                 accountId = authToken.accountId,
@@ -30,7 +30,7 @@ data class AuthTokenEntity(
                     authToken.createdAt ?: LocalDateTime.now()
                 },
                 updatedAt = if (authToken.id != null) {
-                    if (willDelete == true) {
+                    if (willDelete) {
                         authToken.updatedAt
                     } else {
                         LocalDateTime.now()
@@ -38,7 +38,7 @@ data class AuthTokenEntity(
                 } else {
                     null
                 },
-                deletedAt = if (willDelete != null && willDelete == true) {
+                deletedAt = if (willDelete) {
                     LocalDateTime.now()
                 } else {
                     null

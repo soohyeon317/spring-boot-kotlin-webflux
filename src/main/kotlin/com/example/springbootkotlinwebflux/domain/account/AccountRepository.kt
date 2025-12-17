@@ -2,7 +2,7 @@ package com.example.springbootkotlinwebflux.domain.account
 
 interface AccountRepository {
 
-    suspend fun save(account: Account, willDelete: Boolean? = null): Account
+    suspend fun save(account: Account, willDelete: Boolean = false): Account
     suspend fun findTopByThirdPartyAuthTypeAndThirdPartyAuthUidAndDeletedAtIsNullOrderByIdDesc(
         thirdPartyAuthType: ThirdPartyAuthType,
         thirdPartyAuthUid: String

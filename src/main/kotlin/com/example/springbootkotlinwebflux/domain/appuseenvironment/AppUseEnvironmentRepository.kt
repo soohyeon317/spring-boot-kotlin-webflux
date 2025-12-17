@@ -6,7 +6,7 @@ interface AppUseEnvironmentRepository {
 
     suspend fun save(
         appUseEnvironment: AppUseEnvironment,
-        willDelete: Boolean? = null
+        willDelete: Boolean = false
     ): AppUseEnvironment
 
     suspend fun findTopByAccountIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(

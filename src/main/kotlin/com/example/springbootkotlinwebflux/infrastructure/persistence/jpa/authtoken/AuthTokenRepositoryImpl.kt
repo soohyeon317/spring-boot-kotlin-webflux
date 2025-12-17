@@ -15,7 +15,7 @@ class AuthTokenRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher
 ) : AuthTokenRepository {
 
-    override suspend fun save(authToken: AuthToken, willDelete: Boolean?): AuthToken = withContext(ioDispatcher) {
+    override suspend fun save(authToken: AuthToken, willDelete: Boolean): AuthToken = withContext(ioDispatcher) {
         springDataAuthTokenRepository.save(
             AuthTokenEntity(authToken, willDelete)
         ).awaitSingle().toAuthToken()
