@@ -1,4 +1,4 @@
-package com.example.springbootkotlinwebflux.persistence.jpa.account
+package com.example.springbootkotlinwebflux.infrastructure.persistence.jpa.account
 
 import com.example.springbootkotlinwebflux.domain.account.Account
 import com.example.springbootkotlinwebflux.domain.account.ThirdPartyAuthType

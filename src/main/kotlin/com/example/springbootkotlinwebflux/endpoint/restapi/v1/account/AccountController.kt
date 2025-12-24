@@ -20,7 +20,7 @@ import org.springframework.web.server.ServerWebExchange
 class AccountController(
     private val accountSignUpSignInUseCase: AccountSignUpSignInUseCase,
     private val accountSignInRefreshUseCase: AccountSignInRefreshUseCase,
-    private val accountDetailGetUseCase: AccountDetailGetUseCase,
+    private val accountDetailsGetUseCase: AccountDetailsGetUseCase,
     private val accountSignOutUseCase: AccountSignOutUseCase,
     private val accountWithdrawUseCase: AccountWithdrawUseCase,
     private val authenticationTokenManager: AuthenticationTokenManager,
@@ -120,16 +120,16 @@ class AccountController(
     }
 
     @FunctionExecutionBeforeLog
-    @GetMapping("/detail")
+    @GetMapping("/details")
     @ResponseStatus(HttpStatus.OK)
-    suspend fun getAccountDetail(
+    suspend fun getAccountDetails(
         exchange: ServerWebExchange
     ): AccountForResponse {
         val languageCode = exchange.request.headers.getFirst(HeaderKey.LANGUAGE_CODE) ?: LocaleInfoDefault.LANGUAGE_CODE.default
         val countryCode = exchange.request.headers.getFirst(HeaderKey.COUNTRY_CODE) ?: LocaleInfoDefault.COUNTRY_CODE.default
         val timeZoneCode = exchange.request.headers.getFirst(HeaderKey.TIME_ZONE_CODE) ?: LocaleInfoDefault.TIME_ZONE_CODE.default
-        return accountDetailGetUseCase.getAccountDetail(
-            AccountDetailGetCommand.GetAccountDetail(
+        return accountDetailsGetUseCase.getAccountDetails(
+            AccountDetailsGetCommand.GetAccountDetails(
                 accountId = authenticationTokenManager.getAccountId(),
                 languageCode = languageCode,
                 countryCode = countryCode,

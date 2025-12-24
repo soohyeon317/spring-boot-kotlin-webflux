@@ -1,9 +1,8 @@
-package com.example.springbootkotlinwebflux.persistence.jpa.account
+package com.example.springbootkotlinwebflux.infrastructure.persistence.jpa.account
 
 import com.example.springbootkotlinwebflux.domain.account.Account
 import com.example.springbootkotlinwebflux.domain.account.AccountRepository
 import com.example.springbootkotlinwebflux.domain.account.ThirdPartyAuthType
-import com.example.springbootkotlinwebflux.infrastructure.persistence.jpa.account.SpringDataAccountRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull

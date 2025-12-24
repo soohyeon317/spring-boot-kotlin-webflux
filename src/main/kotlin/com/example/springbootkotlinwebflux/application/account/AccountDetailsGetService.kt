@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class AccountDetailGetService(
+class AccountDetailsGetService(
     private val accountRepository: AccountRepository,
-): AccountDetailGetUseCase {
+): AccountDetailsGetUseCase {
 
     @Transactional(rollbackFor = [Throwable::class])
-    override suspend fun getAccountDetail(command: AccountDetailGetCommand.GetAccountDetail): AccountForResponse {
+    override suspend fun getAccountDetails(command: AccountDetailsGetCommand.GetAccountDetails): AccountForResponse {
         try {
             // 기존 계정 데이터 조회
             var myAccount = accountRepository.findTopByIdAndDeletedAtIsNull(id = command.accountId)
