@@ -27,34 +27,34 @@ class AppUseEnvironmentRepositoryImpl(
         ).awaitSingle().toAppUseEnvironment()
     }
 
-    override suspend fun findTopByAccountIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
-        accountId: Long,
+    override suspend fun findTopByMemberIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
+        memberId: Long,
         deviceModelName: String,
     ): AppUseEnvironment? = withContext(ioDispatcher) {
-        springDataAppUseEnvironmentRepository.findTopByAccountIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
-            accountId = accountId,
+        springDataAppUseEnvironmentRepository.findTopByMemberIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
+            memberId = memberId,
             deviceModelName = deviceModelName
         ).awaitSingleOrNull()?.toAppUseEnvironment()
     }
 
-    override suspend fun deleteAllByAccountIdAndDeviceModelNameAndDeletedAtIsNull(
-        accountId: Long,
+    override suspend fun deleteAllByMemberIdAndDeviceModelNameAndDeletedAtIsNull(
+        memberId: Long,
         deviceModelName: String,
         deletedAt: LocalDateTime,
     ): Unit = withContext(ioDispatcher) {
-        springDataAppUseEnvironmentRepository.deleteAllByAccountIdAndDeviceModelNameAndDeletedAtIsNull(
-            accountId = accountId,
+        springDataAppUseEnvironmentRepository.deleteAllByMemberIdAndDeviceModelNameAndDeletedAtIsNull(
+            memberId = memberId,
             deviceModelName = deviceModelName,
             deletedAt = deletedAt
         ).awaitSingleOrNull()
     }
 
-    override suspend fun deleteAllByAccountIdAndDeletedAtIsNull(
-        accountId: Long,
+    override suspend fun deleteAllByMemberIdAndDeletedAtIsNull(
+        memberId: Long,
         deletedAt: LocalDateTime
     ): Unit = withContext(ioDispatcher) {
-        springDataAppUseEnvironmentRepository.deleteAllByAccountIdAndDeletedAtIsNull(
-            accountId = accountId,
+        springDataAppUseEnvironmentRepository.deleteAllByMemberIdAndDeletedAtIsNull(
+            memberId = memberId,
             deletedAt = deletedAt
         ).awaitSingleOrNull()
     }

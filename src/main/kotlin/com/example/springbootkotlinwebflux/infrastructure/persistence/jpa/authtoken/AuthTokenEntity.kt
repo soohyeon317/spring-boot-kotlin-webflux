@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 @Table("auth_token")
 data class AuthTokenEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val id: Long?,
-    val accountId: Long,
+    val memberId: Long,
     val accessToken: String,
     val refreshToken: String,
     val createdAt: LocalDateTime,
@@ -21,7 +21,7 @@ data class AuthTokenEntity(
     constructor(authToken: AuthToken, willDelete: Boolean = false) :
             this(
                 id = authToken.id,
-                accountId = authToken.accountId,
+                memberId = authToken.memberId,
                 accessToken = authToken.accessToken,
                 refreshToken = authToken.refreshToken,
                 createdAt = if (authToken.id == null) {
@@ -47,7 +47,7 @@ data class AuthTokenEntity(
 
     fun toAuthToken(): AuthToken = AuthToken(
         id = this.id,
-        accountId = this.accountId,
+        memberId = this.memberId,
         accessToken = this.accessToken,
         refreshToken = this.refreshToken,
         createdAt = this.createdAt,

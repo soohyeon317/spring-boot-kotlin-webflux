@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 @Table(name = "app_use_environment")
 data class AppUseEnvironmentEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val id: Long?,
-    val accountId: Long,
+    val memberId: Long,
     val deviceModelName: String,
     @Enumerated(EnumType.STRING) val appOs: AppOS,
     val appVersion: String,
@@ -26,7 +26,7 @@ data class AppUseEnvironmentEntity(
     constructor(appUseEnvironment: AppUseEnvironment, willDelete: Boolean = false) :
             this(
                 id = appUseEnvironment.id,
-                accountId = appUseEnvironment.accountId,
+                memberId = appUseEnvironment.memberId,
                 deviceModelName = appUseEnvironment.deviceModelName,
                 appVersion = appUseEnvironment.appVersion,
                 appOs = appUseEnvironment.appOs,
@@ -54,7 +54,7 @@ data class AppUseEnvironmentEntity(
 
     fun toAppUseEnvironment(): AppUseEnvironment = AppUseEnvironment(
         id = this.id,
-        accountId = this.accountId,
+        memberId = this.memberId,
         deviceModelName = this.deviceModelName,
         appOs = this.appOs,
         appVersion = this.appVersion,

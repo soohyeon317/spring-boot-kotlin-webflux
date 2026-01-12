@@ -8,16 +8,16 @@ import java.time.LocalDateTime
 interface SpringDataAuthTokenRepository : R2dbcRepository<AuthTokenEntity, Long> {
 
     fun findTopByAccessTokenAndDeletedAtIsNullOrderByIdDesc(accessToken: String): Mono<AuthTokenEntity>
-    fun findTopByAccountIdAndAccessTokenAndDeletedAtIsNullOrderByIdDesc(accountId: Long, accessToken: String): Mono<AuthTokenEntity>
+    fun findTopByMemberIdAndAccessTokenAndDeletedAtIsNullOrderByIdDesc(memberId: Long, accessToken: String): Mono<AuthTokenEntity>
 
     @Query("""
         UPDATE auth_token
         SET deleted_at = :deletedAt
-        WHERE account_id = :accountId
+        WHERE member_id = :memberId
             AND deleted_at IS NULL
     """)
-    fun deleteAllByAccountIdAndDeletedAtIsNull(
-        accountId: Long,
+    fun deleteAllByMemberIdAndDeletedAtIsNull(
+        memberId: Long,
         deletedAt: LocalDateTime,
     ): Mono<Void>
 }

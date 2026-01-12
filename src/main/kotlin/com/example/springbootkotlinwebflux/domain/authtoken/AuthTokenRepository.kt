@@ -6,10 +6,10 @@ interface AuthTokenRepository {
 
     suspend fun save(authToken: AuthToken, willDelete: Boolean = false): AuthToken
     suspend fun findTopByAccessTokenAndDeletedAtIsNullOrderByIdDesc(accessToken: String): AuthToken?
-    suspend fun findTopByAccountIdAndAccessTokenAndDeletedAtIsNullOrderByIdDesc(accountId: Long, accessToken: String): AuthToken?
+    suspend fun findTopByMemberIdAndAccessTokenAndDeletedAtIsNullOrderByIdDesc(memberId: Long, accessToken: String): AuthToken?
 
-    suspend fun deleteAllByAccountIdAndDeletedAtIsNull(
-        accountId: Long,
+    suspend fun deleteAllByMemberIdAndDeletedAtIsNull(
+        memberId: Long,
         deletedAt: LocalDateTime,
     )
 }

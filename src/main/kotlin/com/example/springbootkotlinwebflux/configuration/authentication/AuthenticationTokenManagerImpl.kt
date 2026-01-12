@@ -55,21 +55,21 @@ class AuthenticationTokenManagerImpl(
             throw UnAuthorizedException(ErrorCode.ACCESS_TOKEN_INVALID)
         }
 
-    override fun createToken(accountId: Long, tokenType: AuthenticationTokenType): String =
-        jwtUtil.generate(accountId, tokenType)
+    override fun createToken(memberId: Long, tokenType: AuthenticationTokenType): String =
+        jwtUtil.generate(memberId, tokenType)
 
-    override fun getAccountIdFromToken(token: String): Long {
+    override fun getMemberIdFromToken(token: String): Long {
         val claims = jwtUtil.parseJWTClaims(token)
-        return when (val accountId = claims[AuthenticationToken.ACCOUNT_ID_CLAIM_KEY]) {
-            is Number -> accountId.toLong()
-            is String -> accountId.toLong()
-            else -> throw IllegalArgumentException("Invalid account ID in token")
+        return when (val memberId = claims[AuthenticationToken.MEMBER_ID_CLAIM_KEY]) {
+            is Number -> memberId.toLong()
+            is String -> memberId.toLong()
+            else -> throw IllegalArgumentException("Invalid member id in token")
         }
     }
 
     override suspend fun isSaved(accessToken: String): Boolean = authTokenRepository.findTopByAccessTokenAndDeletedAtIsNullOrderByIdDesc(accessToken) != null
 
-    override suspend fun getAccountId(): Long = ReactiveSecurityContextHolder
+    override suspend fun getMemberId(): Long = ReactiveSecurityContextHolder
         .getContext()
         .map { security: SecurityContext -> security.authentication!!.principal.toString().toLong() }
         .doOnError {

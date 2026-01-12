@@ -9,19 +9,19 @@ interface AppUseEnvironmentRepository {
         willDelete: Boolean = false
     ): AppUseEnvironment
 
-    suspend fun findTopByAccountIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
-        accountId: Long,
+    suspend fun findTopByMemberIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
+        memberId: Long,
         deviceModelName: String
     ): AppUseEnvironment?
 
-    suspend fun deleteAllByAccountIdAndDeviceModelNameAndDeletedAtIsNull(
-        accountId: Long,
+    suspend fun deleteAllByMemberIdAndDeviceModelNameAndDeletedAtIsNull(
+        memberId: Long,
         deviceModelName: String,
         deletedAt: LocalDateTime
     )
 
-    suspend fun deleteAllByAccountIdAndDeletedAtIsNull(
-        accountId: Long,
+    suspend fun deleteAllByMemberIdAndDeletedAtIsNull(
+        memberId: Long,
         deletedAt: LocalDateTime
     )
 }

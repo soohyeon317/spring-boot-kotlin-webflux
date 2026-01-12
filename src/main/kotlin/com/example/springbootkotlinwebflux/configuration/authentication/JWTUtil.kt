@@ -18,7 +18,7 @@ class JWTUtil(
         .parseSignedClaims(token)
         .payload
 
-    fun generate(accountId: Long, tokenType: AuthenticationTokenType): String {
+    fun generate(memberId: Long, tokenType: AuthenticationTokenType): String {
         val calendar = Calendar.getInstance()
         calendar.time = Date()
         if (tokenType == AuthenticationTokenType.ACCESS) {
@@ -35,7 +35,7 @@ class JWTUtil(
             .id(UUID.randomUUID().toString())
             .claims(
                 mapOf(
-                    AuthenticationToken.ACCOUNT_ID_CLAIM_KEY to accountId,
+                    AuthenticationToken.MEMBER_ID_CLAIM_KEY to memberId,
                     AuthenticationToken.TOKEN_TYPE_CLAIM_KEY to tokenType
                 )
             )

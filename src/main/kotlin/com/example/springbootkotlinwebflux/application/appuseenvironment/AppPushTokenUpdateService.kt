@@ -15,10 +15,10 @@ class AppPushTokenUpdateService(
     @Transactional(rollbackFor = [Throwable::class])
     override suspend fun updateAppPushToken(command: AppPushTokenUpdateCommand.UpdateAppPushToken) {
         try {
-            val myAccountId = command.accountId
+            val myMemberId = command.memberId
 
-            val existingAppUseEnvironment = appUseEnvironmentRepository.findTopByAccountIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
-                accountId = myAccountId,
+            val existingAppUseEnvironment = appUseEnvironmentRepository.findTopByMemberIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
+                memberId = myMemberId,
                 deviceModelName = command.deviceModelName,
             ) ?: throw AppUseEnvironmentNotFoundException(code = ErrorCode.APP_USE_ENVIRONMENT_NOT_FOUND)
 

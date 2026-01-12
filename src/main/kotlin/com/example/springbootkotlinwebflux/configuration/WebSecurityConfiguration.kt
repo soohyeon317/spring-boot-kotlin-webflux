@@ -37,9 +37,9 @@ class WebSecurityConfiguration(
             }
             .authorizeExchange {
                 val authenticatedUrls = listOf(
-                    // accounts
-                    "/api/v1/accounts/sign-up/sign-in",
-                    "/api/v1/accounts/sign-in/refresh",
+                    // members
+                    "/api/v1/members/sign-up/sign-in",
+                    "/api/v1/members/sign-in/refresh",
 
                     // Health Check
                     "/health"

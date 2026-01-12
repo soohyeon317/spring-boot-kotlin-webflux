@@ -7,21 +7,21 @@ import org.springframework.web.server.ServerWebExchange
 import java.util.*
 
 data class AuthenticationToken(
-    val accountId: Long,
+    val memberId: Long,
     val expiration: Long,
     val expirationDate: Date,
     val tokenType: AuthenticationTokenType
 ) {
 
     constructor(claims: Claims) : this(
-        accountId = claims[ACCOUNT_ID_CLAIM_KEY].toString().toLong(),
+        memberId = claims[MEMBER_ID_CLAIM_KEY].toString().toLong(),
         expiration = claims.expiration.toInstant().toEpochMilli(),
         expirationDate = claims.expiration,
         tokenType = AuthenticationTokenType.valueOf(claims[TOKEN_TYPE_CLAIM_KEY] as String)
     )
 
     companion object {
-        const val ACCOUNT_ID_CLAIM_KEY = "accountId"
+        const val MEMBER_ID_CLAIM_KEY = "memberId"
         const val TOKEN_TYPE_CLAIM_KEY = "tokenType"
         const val BEARER_TOKEN_PREFIX = "Bearer "
 

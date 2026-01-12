@@ -7,20 +7,20 @@ import java.time.LocalDateTime
 
 interface SpringDataAppUseEnvironmentRepository : R2dbcRepository<AppUseEnvironmentEntity, Long> {
 
-    fun findTopByAccountIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
-        accountId: Long,
+    fun findTopByMemberIdAndDeviceModelNameAndDeletedAtIsNullOrderByIdDesc(
+        memberId: Long,
         deviceModelName: String,
     ): Mono<AppUseEnvironmentEntity>
 
     @Query("""
         UPDATE app_use_environment
         SET deleted_at = :deletedAt
-        WHERE account_id = :accountId
+        WHERE member_id = :memberId
             AND device_model_name = :deviceModelName
             AND deleted_at IS NULL
     """)
-    fun deleteAllByAccountIdAndDeviceModelNameAndDeletedAtIsNull(
-        accountId: Long,
+    fun deleteAllByMemberIdAndDeviceModelNameAndDeletedAtIsNull(
+        memberId: Long,
         deviceModelName: String,
         deletedAt: LocalDateTime,
     ): Mono<Void>
@@ -28,11 +28,11 @@ interface SpringDataAppUseEnvironmentRepository : R2dbcRepository<AppUseEnvironm
     @Query("""
         UPDATE app_use_environment
         SET deleted_at = :deletedAt
-        WHERE account_id = :accountId
+        WHERE member_id = :memberId
             AND deleted_at IS NULL
     """)
-    fun deleteAllByAccountIdAndDeletedAtIsNull(
-        accountId: Long,
+    fun deleteAllByMemberIdAndDeletedAtIsNull(
+        memberId: Long,
         deletedAt: LocalDateTime,
     ): Mono<Void>
 }
